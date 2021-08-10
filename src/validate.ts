@@ -59,6 +59,32 @@ async function main() {
   }
 }
 
+const isBridgeValid = (symbol: string, chainId: number) => {
+  let isValid = false;
+  // todo: figure out how to do validate these
+  if (symbol === "SNX" || symbol === "DAI") {
+    isValid = true;
+  } else {
+    new Contract(token.address, JSON.stringify(validationInterface), provider);
+    try {
+      const l1TokenBridgeAddress = await contracts.l2.bridge.l1TokenBridge();
+      const l2TokenBridgeAddress = await contracts.l1.bridge.l2TokenBridge();
+      console.log(l1TokenBridgeAddress, l2TokenBridgeAddress);
+      if (
+        l2TokenBridgeAddress !== contracts.l2.bridge.address ||
+        l1TokenBridgeAddress !== contracts.l1.bridge.address
+      ) {
+      } else {
+        isValid = true;
+      }
+    } catch (err) {
+      console.error(err);
+      Sentry.captureException(err, { tags: { handler: "handleDeposit" } });
+    }
+  }
+  return isValid;
+};
+
 main()
   .then(() => {
     console.log("\nToken list validated!\n");
