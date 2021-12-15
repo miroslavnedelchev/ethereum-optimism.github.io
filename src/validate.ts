@@ -67,9 +67,12 @@ async function main() {
       const decimals = await contract.decimals();
 
       if (symbol !== tokenData.symbol) {
-        throw Error(
-          `Contract symbol mismatch. ${symbol} !== ${tokenData.symbol} \nAddress: ${tokenData.address}`
-        );
+        // Add an exception for the DF token as it uses bytes32 properties for symbol and name
+        if (tokenData.symbol !== "DF") {
+          throw Error(
+            `Contract symbol mismatch. ${symbol} !== ${tokenData.symbol} \nAddress: ${tokenData.address}`
+          );
+        }
       }
       if (decimals !== tokenData.decimals) {
         throw Error(
@@ -118,7 +121,7 @@ const validateBridgeAddress = async currentChainTokenData => {
   );
 
   let isValid = false;
-  // todo: figure out how to do validate these
+  // Exclude tokens with custom bridges from validation of the bridge setup
   if (
     currentChainTokenData.symbol === "SNX" ||
     currentChainTokenData.symbol === "DAI"
